@@ -14,7 +14,7 @@ RUN set -x \
   && apt-get install -y build-essential rabbitmq-server redis-server \
     postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6 libpq-dev \
     gzip bash vim openssl libcap-dev dumb-init sudo gettext zlibc zlib1g zlib1g-dev \
-    iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev \
+    iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git\
   && apt-get install -y certbot -t stretch-backports
 
 # start ubnt/unms dockerfile #
