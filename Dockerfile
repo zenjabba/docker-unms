@@ -50,7 +50,7 @@ RUN cd /home/app/netflow \
 
 # ubnt/nginx docker file #
 ENV NGINX_UID=1000 \
-    NGINX_VERSION=nginx-1.12.2 \
+    NGINX_VERSION=nginx-1.14.2 \
     LUAJIT_VERSION=2.1.0-beta3 \
     LUA_NGINX_VERSION=0.10.13
 
@@ -108,10 +108,11 @@ ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.2.tar.gz /tmp/unms.tar.gz
 RUN cd /tmp \
     && tar -xzf unms.tar.gz \
     && cd UNMS-*/src/nginx \
-    && cp entrypoint.sh refresh-certificate.sh openssl.cnf *.conf.template / \
+    && cp entrypoint.sh refresh-certificate.sh refresh-configuration.sh openssl.cnf ip-whitelist.sh / \
+	&& cp templates /templates \
     && mkdir -p /www/public \
     && cp -R public /www/ \
-    && chmod +x /entrypoint.sh /refresh-certificate.sh
+    && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh
 
 # make compatible with debian
 RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
