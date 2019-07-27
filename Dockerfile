@@ -109,7 +109,7 @@ RUN cd /tmp \
     && tar -xzf unms.tar.gz \
     && cd UNMS-*/src/nginx \
     && cp entrypoint.sh refresh-certificate.sh refresh-configuration.sh openssl.cnf ip-whitelist.sh / \
-	&& cp templates /templates \
+	&& cp -R templates /templates \
     && mkdir -p /www/public \
     && cp -R public /www/ \
     && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh
