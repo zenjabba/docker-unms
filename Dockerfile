@@ -108,10 +108,10 @@ ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.2.tar.gz /tmp/unms.tar.gz
 RUN cd /tmp \
     && tar -xzf unms.tar.gz \
     && cd UNMS-*/src/nginx \
-    && cp entrypoint.sh refresh-certificate.sh fill-template.sh openssl.cnf *.conf.template / \
+    && cp entrypoint.sh refresh-certificate.sh openssl.cnf *.conf.template / \
     && mkdir -p /www/public \
     && cp -R public /www/ \
-    && chmod +x /entrypoint.sh /fill-template.sh /refresh-certificate.sh
+    && chmod +x /entrypoint.sh /refresh-certificate.sh
 
 # make compatible with debian
 RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
