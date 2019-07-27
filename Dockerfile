@@ -1,7 +1,7 @@
 # Multi-stage build - See https://docs.docker.com/engine/userguide/eng-image/multistage-build
 FROM ubnt/unms:0.14.2 as unms
 FROM ubnt/unms-netflow:0.14.2 as unms-netflow
-FROM oznu/s6-node:10.16.0-debian-amd64
+FROM oznu/s6-node:10.15.1-debian-amd64
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -50,7 +50,7 @@ RUN cd /home/app/netflow \
 
 # ubnt/nginx docker file #
 ENV NGINX_UID=1000 \
-    NGINX_VERSION=nginx-1.14.2 \
+    NGINX_VERSION=nginx-1.12.2 \
     LUAJIT_VERSION=2.1.0-beta3 \
     LUA_NGINX_VERSION=0.10.13
 
@@ -109,7 +109,7 @@ RUN cd /tmp \
     && tar -xzf unms.tar.gz \
     && cd UNMS-*/src/nginx \
     && cp entrypoint.sh refresh-certificate.sh refresh-configuration.sh openssl.cnf ip-whitelist.sh / \
-	&& cp -R templates /templates \
+    && cp -R templates /templates \
     && mkdir -p /www/public \
     && cp -R public /www/ \
     && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh
