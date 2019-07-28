@@ -35,27 +35,27 @@ if [ $? -ne 0 ]; then
   
   createdb -U postgres -O postgres $POSTGRES_DB
   # Create user unms
-  psql -U postgres -d unms -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
+  psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
   psql -U postgres -d unms -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UNMS_PG_USER"
   
   # Create user ucrm
-  psql -U postgres -d unms -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
-  psql -U postgres -d unms -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UCRM_PG_USER"
+  psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
+  psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UCRM_PG_USER"
   
   # Rename schema public to unms
-  psql -U postgres -d unms -c "ALTER SCHEMA public RENAME TO $UNMS_PG_SCHEMA"
+  psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA public RENAME TO $UNMS_PG_SCHEMA"
   
   # Create new schemas
-  psql -U postgres -d unms -c "CREATE SCHEMA IF NOT EXISTS public"
-  psql -U postgres -d unms -c "CREATE SCHEMA IF NOT EXISTS $UCRM_PG_SCHEMA"
+  psql -U postgres -d $POSTGRES_DB -c "CREATE SCHEMA IF NOT EXISTS public"
+  psql -U postgres -d $POSTGRES_DB -c "CREATE SCHEMA IF NOT EXISTS $UCRM_PG_SCHEMA"
   
   # Change search paths
-  psql -U postgres -d unms -c "ALTER USER $UNMS_PG_USER SET search_path = $UNMS_PG_SCHEMA,public"
-  psql -U postgres -d unms -c "ALTER USER $UCRM_PG_USER SET search_path = $UCRM_POSTGRES_SCHEMA,public"
+  psql -U postgres -d $POSTGRES_DB -c "ALTER USER $UNMS_PG_USER SET search_path = $UNMS_PG_SCHEMA,public"
+  psql -U postgres -d $POSTGRES_DB -c "ALTER USER $UCRM_PG_USER SET search_path = $UCRM_PG_SCHEMA,public"
   
   # Change schema owners
-  psql -U postgres -d unms -c "ALTER SCHEMA $UNMS_PG_SCHEMA OWNER TO $UNMS_PG_USER"
-  psql -U postgres -d unms -c "ALTER SCHEMA $UCRM_PG_SCHEMA OWNER TO $UCRM_PG_USER"
+  psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA $UNMS_PG_SCHEMA OWNER TO $UNMS_PG_USER"
+  psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA $UCRM_PG_SCHEMA OWNER TO $UCRM_PG_USER"
   
 fi
 
