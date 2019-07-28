@@ -12,11 +12,14 @@ export UNMS_PG_HOST=localhost
 export UNMS_PG_PORT=5432
 export UNMS_PG_USER=postgres
 export UNMS_PG_PASSWORD=
-export UNMS_PG_SCHEMA=public
+export UNMS_PG_SCHEMA=unsm
 export UNMS_FLUENTD_HOST=localhost
 export UNMS_FLUENTD_PORT=8081
 export UNMS_NGINX_HOST=localhost
 export UNMS_NGINX_PORT=12345
+export UCRM_PG_USER=postgres
+export UCRM_PG_SCHEMA=ucrm
+export UCRM_PG_PASSWORD=
 export NODE_ENV=production
 
 # wait for postgres to come up
