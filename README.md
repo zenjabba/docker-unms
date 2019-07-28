@@ -1,6 +1,6 @@
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/nico640/docker-unms?label=x64%20build)](https://hub.docker.com/r/nico640/docker-unms/) 
-[![Travis](https://img.shields.io/travis/oznu/docker-unms.svg?label=arm%20build)](https://travis-ci.org/oznu/docker-unms) 
-[![GitHub release](https://img.shields.io/github/release/oznu/unms/all.svg)](https://github.com/oznu/docker-unms/releases)
+[![Travis](https://img.shields.io/travis/nico640/docker-unms?label=arm%20build)](https://travis-ci.org/nico640/docker-unms) 
+[![GitHub release](https://img.shields.io/github/release/nico640/docker-unms/all)](https://github.com/nico640/docker-unms/releases)
 
 # Docker UNMS
 
