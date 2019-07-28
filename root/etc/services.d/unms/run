@@ -10,16 +10,16 @@ export UNMS_REDISDB_HOST=localhost
 export UNMS_REDISDB_PORT=6379
 export UNMS_PG_HOST=localhost
 export UNMS_PG_PORT=5432
-export UNMS_PG_USER=postgres
-export UNMS_PG_PASSWORD=
+export UNMS_PG_USER=unms
+export UNMS_PG_PASSWORD=unms
 export UNMS_PG_SCHEMA=unms
 export UNMS_FLUENTD_HOST=localhost
 export UNMS_FLUENTD_PORT=8081
 export UNMS_NGINX_HOST=localhost
 export UNMS_NGINX_PORT=12345
-export UCRM_PG_USER=postgres
+export UCRM_PG_USER=ucrm
 export UCRM_PG_SCHEMA=ucrm
-export UCRM_PG_PASSWORD=
+export UCRM_PG_PASSWORD=ucrm
 export NODE_ENV=production
 
 # wait for postgres to come up
@@ -32,9 +32,31 @@ done
 psql -U postgres -lqt | cut -d \| -f 1 | grep -qw $POSTGRES_DB
 if [ $? -ne 0 ]; then
   echo "Creating database..."
+  
   createdb -U postgres -O postgres $POSTGRES_DB
-  CREATE SCHEMA unms;
-  CREATE SCHEMA ucrm;
+  # Create user unms
+  psql -U postgres -d unms -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
+  psql -U postgres -d unms -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UNMS_PG_USER"
+  
+  # Create user ucrm
+  psql -U postgres -d unms -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
+  psql -U postgres -d unms -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UCRM_PG_USER"
+  
+  # Rename schema public to unms
+  psql -U postgres -d unms -c "ALTER SCHEMA public RENAME TO $UNMS_PG_SCHEMA"
+  
+  # Create new schemas
+  psql -U postgres -d unms -c "CREATE SCHEMA IF NOT EXISTS public"
+  psql -U postgres -d unms -c "CREATE SCHEMA IF NOT EXISTS $UCRM_PG_SCHEMA"
+  
+  # Change search paths
+  psql -U postgres -d unms -c "ALTER USER $UNMS_PG_USER SET search_path = $UNMS_PG_SCHEMA,public"
+  psql -U postgres -d unms -c "ALTER USER $UCRM_PG_USER SET search_path = $UCRM_POSTGRES_SCHEMA,public"
+  
+  # Change schema owners
+  psql -U postgres -d unms -c "ALTER SCHEMA $UNMS_PG_SCHEMA OWNER TO $UNMS_PG_USER"
+  psql -U postgres -d unms -c "ALTER SCHEMA $UCRM_PG_SCHEMA OWNER TO $UCRM_PG_USER"
+  
 fi
 
 if [ "$QUIET_MODE" = "1" ]; then
