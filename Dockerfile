@@ -50,7 +50,7 @@ RUN cd /home/app/netflow \
 
 # ubnt/nginx docker file #
 ENV NGINX_UID=1000 \
-    NGINX_VERSION=nginx-1.12.2 \
+    NGINX_VERSION=nginx-1.14.2 \
     LUAJIT_VERSION=2.1.0-beta3 \
     LUA_NGINX_VERSION=0.10.13
 
