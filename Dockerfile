@@ -28,13 +28,15 @@ COPY --from=unms /home/app/unms /home/app/unms
 RUN rm -rf node_modules \
     && JOBS=$(nproc) npm install sharp@latest \
     && JOBS=$(nproc) npm install --production \
+	&& JOBS=$(nproc) npm install npm \
     && mkdir -p -m 777 "$HOME/unms/public/site-images" \
     && mkdir -p -m 777 "$HOME/unms/data/config-backups" \
     && mkdir -p -m 777 "$HOME/unms/data/unms-backups" \
     && mkdir -p -m 777 "$HOME/unms/data/import"
 
 COPY --from=unms /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
+	&& cp -r /home/app/unms/node_modules/npm /home/app/unms/
 # end ubnt/unms dockerfile #
 
 # start unms-netflow dockerfile #
