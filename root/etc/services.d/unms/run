@@ -39,7 +39,7 @@ if [ $? -ne 0 ]; then
   psql -U postgres -d unms -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UNMS_PG_USER"
   
   # Create user ucrm
-  psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
+  psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UCRM_PG_USER SUPERUSER PASSWORD '$UCRM_PG_PASSWORD'"
   psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UCRM_PG_USER"
   
   # Rename schema public to unms
