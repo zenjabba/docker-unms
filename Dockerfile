@@ -105,19 +105,19 @@ RUN set -x \
     && echo "unms ALL=(ALL) NOPASSWD: /usr/sbin/nginx -s *" >> /etc/sudoers \
     && echo "unms ALL=(ALL) NOPASSWD:SETENV: /copy-user-certs.sh reload" >> /etc/sudoers
 
-# ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.2.tar.gz /tmp/unms.tar.gz
-ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.13.3.tar.gz /tmp/unms.tar.gz
+ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.2.tar.gz /tmp/unms.tar.gz
+# ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.13.3.tar.gz /tmp/unms.tar.gz
 
 RUN cd /tmp \
     && tar -xzf unms.tar.gz \
     && cd UNMS-*/src/nginx \
-	&& cp entrypoint.sh refresh-certificate.sh fill-template.sh openssl.cnf *.conf.template / \
-    # && cp entrypoint.sh refresh-certificate.sh refresh-configuration.sh openssl.cnf ip-whitelist.sh / \
-    # && cp -R templates /templates \
+	# && cp entrypoint.sh refresh-certificate.sh fill-template.sh openssl.cnf *.conf.template / \
+    && cp entrypoint.sh refresh-certificate.sh refresh-configuration.sh openssl.cnf ip-whitelist.sh / \
+    && cp -R templates /templates \
     && mkdir -p /www/public \
     && cp -R public /www/ \
-    # && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh
-	&& chmod +x /entrypoint.sh /fill-template.sh /refresh-certificate.sh
+    && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh
+	# && chmod +x /entrypoint.sh /fill-template.sh /refresh-certificate.sh
 
 # make compatible with debian
 RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
