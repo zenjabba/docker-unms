@@ -2,7 +2,7 @@
 FROM ubnt/unms:0.14.2 as unms
 FROM ubnt/unms-netflow:0.14.2 as unms-netflow
 FROM oznu/s6-node:10.15.1-debian-armhf
-FROM balenalib/armv7hf-debian-node:10.15.1-stretch
+FROM balenalib/armv7hf-debian-node:latest-stretch-build
 
 RUN [ "cross-build-start" ]
 
@@ -56,7 +56,7 @@ RUN cd /home/app/netflow \
 
 # ubnt/nginx docker file #
 ENV NGINX_UID=1000 \
-    NGINX_VERSION=nginx-1.12.2 \
+    NGINX_VERSION=nginx-1.14.2 \
     LUAJIT_VERSION=2.1.0-beta3 \
     LUA_NGINX_VERSION=0.10.13
 
