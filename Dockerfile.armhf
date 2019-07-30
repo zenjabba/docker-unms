@@ -2,7 +2,7 @@
 FROM ubnt/unms:0.14.2 as unms
 FROM ubnt/unms-netflow:0.14.2 as unms-netflow
 FROM oznu/s6-node:10.15.1-debian-armhf
-FROM balenalib/armv7hf-debian
+FROM balenalib/armv7hf-debian:stretch
 
 RUN [ "cross-build-start" ]
 
