@@ -34,6 +34,13 @@ if [ $? -ne 0 ]; then
   echo "Creating database..."
   
   createdb -U postgres -O postgres $POSTGRES_DB
+  
+  fi
+  
+psql -U postgres -d unms -qt -c "SELECT schema_name FROM information_schema.schemata" | cut -d \| -f 1 | grep -qw $UNMS_PG_SCHEMA
+if [ $? -ne 0 ]; then
+  echo "Migrating database..."
+  
   # Create user unms
   psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
   psql -U postgres -d unms -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UNMS_PG_USER"
@@ -62,8 +69,7 @@ if [ $? -ne 0 ]; then
   psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_db_version_view OWNER TO $UCRM_PG_USER"
   psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_permission_group_view AS select uuid '00000000-0000-0000-0000-000000000000' as id, character varying(250) '0' as name"
   psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_permission_group_view OWNER TO $UCRM_PG_USER"
-  
-  
+    
 fi
 
 if [ "$QUIET_MODE" = "1" ]; then
