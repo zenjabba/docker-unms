@@ -14,7 +14,7 @@ RUN set -x \
   && apt-get install -y build-essential rabbitmq-server redis-server \
     postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6 libpq-dev \
     gzip bash vim openssl libcap-dev dumb-init sudo gettext zlibc zlib1g zlib1g-dev \
-    iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git\
+    iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git \
   && apt-get install -y certbot -t stretch-backports
 
 # start ubnt/unms dockerfile #
@@ -28,7 +28,7 @@ COPY --from=unms /home/app/unms /home/app/unms
 RUN rm -rf node_modules \
     && JOBS=$(nproc) npm install sharp@latest \
     && JOBS=$(nproc) npm install --production \
-	&& JOBS=$(nproc) npm install npm \
+    && JOBS=$(nproc) npm install npm \
     && mkdir -p -m 777 "$HOME/unms/public/site-images" \
     && mkdir -p -m 777 "$HOME/unms/data/config-backups" \
     && mkdir -p -m 777 "$HOME/unms/data/unms-backups" \
@@ -36,7 +36,7 @@ RUN rm -rf node_modules \
 
 COPY --from=unms /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
-	&& cp -r /home/app/unms/node_modules/npm /home/app/unms/
+    && cp -r /home/app/unms/node_modules/npm /home/app/unms/
 # end ubnt/unms dockerfile #
 
 # start unms-netflow dockerfile #
@@ -106,18 +106,15 @@ RUN set -x \
     && echo "unms ALL=(ALL) NOPASSWD:SETENV: /copy-user-certs.sh reload" >> /etc/sudoers
 
 ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.2.tar.gz /tmp/unms.tar.gz
-# ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.13.3.tar.gz /tmp/unms.tar.gz
 
 RUN cd /tmp \
     && tar -xzf unms.tar.gz \
     && cd UNMS-*/src/nginx \
-	# && cp entrypoint.sh refresh-certificate.sh fill-template.sh openssl.cnf *.conf.template / \
     && cp entrypoint.sh refresh-certificate.sh refresh-configuration.sh openssl.cnf ip-whitelist.sh / \
     && cp -R templates /templates \
     && mkdir -p /www/public \
     && cp -R public /www/ \
     && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh
-	# && chmod +x /entrypoint.sh /fill-template.sh /refresh-certificate.sh
 
 # make compatible with debian
 RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
