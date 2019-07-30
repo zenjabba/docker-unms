@@ -1,11 +1,11 @@
-FROM balenalib/armv7hf-debian
-
-RUN [ "cross-build-start" ]
-
 # Multi-stage build - See https://docs.docker.com/engine/userguide/eng-image/multistage-build
 FROM ubnt/unms:0.14.2 as unms
 FROM ubnt/unms-netflow:0.14.2 as unms-netflow
 FROM oznu/s6-node:10.15.1-debian-armhf
+FROM balenalib/armv7hf-debian
+
+RUN [ "cross-build-start" ]
+
 
 ENV DEBIAN_FRONTEND=noninteractive
 
