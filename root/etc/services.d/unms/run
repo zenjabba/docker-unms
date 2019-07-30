@@ -32,44 +32,34 @@ done
 psql -U postgres -lqt | cut -d \| -f 1 | grep -qw $POSTGRES_DB
 if [ $? -ne 0 ]; then
   echo "Creating database..."
-  
   createdb -U postgres -O postgres $POSTGRES_DB
-  
-  fi
+fi
   
 psql -U postgres -d unms -qt -c "SELECT schema_name FROM information_schema.schemata" | cut -d \| -f 1 | grep -qw $UNMS_PG_SCHEMA
 if [ $? -ne 0 ]; then
   echo "Migrating database..."
-  
   # Create user unms
   psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
   psql -U postgres -d unms -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UNMS_PG_USER"
-  
   # Create user ucrm
   psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UCRM_PG_USER SUPERUSER PASSWORD '$UCRM_PG_PASSWORD'"
   psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UCRM_PG_USER"
-  
   # Rename schema public to unms
   psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA public RENAME TO $UNMS_PG_SCHEMA"
-  
   # Create new schemas
   psql -U postgres -d $POSTGRES_DB -c "CREATE SCHEMA IF NOT EXISTS public"
   psql -U postgres -d $POSTGRES_DB -c "CREATE SCHEMA IF NOT EXISTS $UCRM_PG_SCHEMA"
-  
   # Change search paths
   psql -U postgres -d $POSTGRES_DB -c "ALTER USER $UNMS_PG_USER SET search_path = $UNMS_PG_SCHEMA,public"
   psql -U postgres -d $POSTGRES_DB -c "ALTER USER $UCRM_PG_USER SET search_path = $UCRM_PG_SCHEMA,public"
-  
   # Change schema owners
   psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA $UNMS_PG_SCHEMA OWNER TO $UNMS_PG_USER"
   psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA $UCRM_PG_SCHEMA OWNER TO $UCRM_PG_USER"
-  
   #UCRM views
   psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_db_version_view AS SELECT character varying(500) '0.14.2' as value"
   psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_db_version_view OWNER TO $UCRM_PG_USER"
   psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_permission_group_view AS select uuid '00000000-0000-0000-0000-000000000000' as id, character varying(250) '0' as name"
-  psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_permission_group_view OWNER TO $UCRM_PG_USER"
-    
+  psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_permission_group_view OWNER TO $UCRM_PG_USER"  
 fi
 
 if [ "$QUIET_MODE" = "1" ]; then
