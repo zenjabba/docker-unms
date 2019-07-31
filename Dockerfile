@@ -14,7 +14,7 @@ RUN set -x \
   && apt-get install -y build-essential rabbitmq-server redis-server \
     postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6 libpq-dev \
     gzip bash vim openssl libcap-dev dumb-init sudo gettext zlibc zlib1g zlib1g-dev \
-    iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git\
+    iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git \
   && apt-get install -y certbot -t stretch-backports
 
 # start ubnt/unms dockerfile #
@@ -36,7 +36,7 @@ RUN rm -rf node_modules \
 
 COPY --from=unms /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
-	&& cp -r /home/app/unms/node_modules/npm /home/app/unms/
+    && cp -r /home/app/unms/node_modules/npm /home/app/unms/
 # end ubnt/unms dockerfile #
 
 # start unms-netflow dockerfile #
