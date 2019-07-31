@@ -4,6 +4,10 @@ dist: xenial
 
 language: bash
 
+branches:
+  only:
+  - master
+
 services:
   - docker
 
