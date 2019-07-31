@@ -28,7 +28,7 @@ COPY --from=unms /home/app/unms /home/app/unms
 RUN rm -rf node_modules \
     && JOBS=$(nproc) npm install sharp@latest \
     && JOBS=$(nproc) npm install --production \
-	&& JOBS=$(nproc) npm install npm \
+    && JOBS=$(nproc) npm install npm \
     && mkdir -p -m 777 "$HOME/unms/public/site-images" \
     && mkdir -p -m 777 "$HOME/unms/data/config-backups" \
     && mkdir -p -m 777 "$HOME/unms/data/unms-backups" \
@@ -106,18 +106,15 @@ RUN set -x \
     && echo "unms ALL=(ALL) NOPASSWD:SETENV: /copy-user-certs.sh reload" >> /etc/sudoers
 
 ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.2.tar.gz /tmp/unms.tar.gz
-# ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.13.3.tar.gz /tmp/unms.tar.gz
 
 RUN cd /tmp \
     && tar -xzf unms.tar.gz \
     && cd UNMS-*/src/nginx \
-	# && cp entrypoint.sh refresh-certificate.sh fill-template.sh openssl.cnf *.conf.template / \
     && cp entrypoint.sh refresh-certificate.sh refresh-configuration.sh openssl.cnf ip-whitelist.sh / \
     && cp -R templates /templates \
     && mkdir -p /www/public \
     && cp -R public /www/ \
     && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh
-	# && chmod +x /entrypoint.sh /fill-template.sh /refresh-certificate.sh
 
 # make compatible with debian
 RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
