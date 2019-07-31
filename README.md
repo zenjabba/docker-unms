@@ -17,7 +17,7 @@ docker run \
   -p 2055:2055/udp \
   -e TZ=<timezone> \
   -v </path/to/config>:/config \
-  oznu/unms:latest
+  nico640/docker-unms:latest
 ```
 
 ## Raspberry Pi / ARMv7
@@ -25,7 +25,7 @@ docker run \
 This image will also allow you to run [UNMS](https://unms.com/) on a Raspberry Pi or other Docker-enabled ARMv7/8 devices by using the `armhf` tag.
 
 ```
-docker run -d --name unms -p 80:80 -p 443:443 -p 2055:2055/udp -v </path/to/config>:/config oznu/unms:armhf
+docker run -d --name unms -p 80:80 -p 443:443 -p 2055:2055/udp -v </path/to/config>:/config nico640/docker-unms:armhf
 ```
 
 ## Parameters
@@ -58,7 +58,7 @@ The Docker image, oznu/unms, is not maintained by or affiliated with Ubiquiti Ne
 version: '2'
 services:
   unms:
-    image: oznu/unms:latest  # use "armhf" instead of "latest" for arm devices
+    image: nico640/docker-unms:latest  # use "armhf" instead of "latest" for arm devices
     restart: always
     ports:
       - 80:80
