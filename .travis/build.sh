@@ -14,7 +14,7 @@ build_images() {
         --frontend-opt platform=linux/${PLATFORM} \
         --frontend-opt filename=./${DOCKERFILE_LOCATION} \
         --exporter image \
-        --exporter-opt name=docker.io/${DOCKER_USER}/${IMAGE}:${TAG}-${PLATFORM} \
+        --exporter-opt name=docker.io/${DOCKER_USER}/${DOCKER_IMAGE}:${DOCKER_TAG}-${PLATFORM} \
         --exporter-opt push=true \
         --local dockerfile=. \
         --local context=.
