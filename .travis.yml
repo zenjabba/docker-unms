@@ -17,10 +17,10 @@ env:
     - BUILDKIT_HOST=tcp://0.0.0.0:1234
     - DOCKER_CLI_EXPERIMENTAL=enabled
 
-before_install: >
-  chmod +x ./.travis/build.sh
-  chmod +x ./.travis/setup.sh
-  ./.travis/setup.sh
+before_install:
+  - chmod +x ./.travis/build.sh
+  - chmod +x ./.travis/setup.sh
+  - ./.travis/setup.sh
 
 jobs:
   include:
