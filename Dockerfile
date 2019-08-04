@@ -85,7 +85,6 @@ RUN set -x \
         --without-http_memcached_module \
         --without-http_auth_basic_module \
         --without-http_userid_module \
-        --without-http_fastcgi_module \
         --without-http_uwsgi_module \
         --without-http_scgi_module \
         --prefix=/var/lib/nginx \
