@@ -14,7 +14,8 @@ RUN set -x \
   && apt-get install -y build-essential rabbitmq-server redis-server \
     postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6 libpq-dev \
     gzip bash vim openssl libcap-dev dumb-init sudo gettext zlibc zlib1g zlib1g-dev \
-    iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git \
+    iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git pkg-config \
+	libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev \
   && apt-get install -y certbot -t stretch-backports
 
 # start ubnt/unms dockerfile #
@@ -54,7 +55,8 @@ RUN cd /home/app/netflow \
 ENV NGINX_UID=1000 \
     NGINX_VERSION=nginx-1.14.2 \
     LUAJIT_VERSION=2.1.0-beta3 \
-    LUA_NGINX_VERSION=0.10.13
+    LUA_NGINX_VERSION=0.10.13 \
+	PHP_VERSION=php-7.2.19
 
 RUN set -x \
     && mkdir -p /tmp/src && cd /tmp/src \
@@ -62,10 +64,12 @@ RUN set -x \
     && wget -q https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGINX_VERSION}.tar.gz -O lua-nginx-module.tar.gz \
     && wget -q https://github.com/simpl/ngx_devel_kit/archive/v0.3.0.tar.gz -O ndk.tar.gz \
     && wget -q http://luajit.org/download/LuaJIT-${LUAJIT_VERSION}.tar.gz -O luajit.tar.gz \
+	&& wget -q https://www.php.net/get/${PHP_VERSION}.tar.xz/from/this/mirror -O php.tar.xz \
     && tar -zxvf lua-nginx-module.tar.gz \
     && tar -zxvf ndk.tar.gz \
     && tar -zxvf luajit.tar.gz \
     && tar -zxvf nginx.tar.gz \
+	&& tar -xvf php.tar.xz \
     && cd /tmp/src/LuaJIT-${LUAJIT_VERSION} && make amalg PREFIX='/usr' && make install PREFIX='/usr' \
     && export LUAJIT_LIB=/usr/lib/libluajit-5.1.so && export LUAJIT_INC=/usr/include/luajit-2.1 \
     && cd /tmp/src/${NGINX_VERSION} && ./configure \
@@ -97,6 +101,22 @@ RUN set -x \
         --http-client-body-temp-path=/tmp/body \
         --http-proxy-temp-path=/tmp/proxy \
     && make -j $(nproc) \
+    && make install \
+	&& cd /tmp/src/${PHP_VERSION} && ./configure \
+	    --with-config-file-path="/etc/php" \
+        --with-config-file-scan-dir="/etc/php/conf.d" \
+        --enable-option-checking=fatal \
+        --with-mhash \
+        --enable-ftp \
+        --enable-mbstring \
+        --enable-mysqlnd \
+        --with-password-argon2 \
+        --with-sodium=shared \
+        --with-curl \
+        --with-libedit \
+        --with-openssl \
+        --with-zlib \
+	&& make -j $(nproc) \
     && make install \
     && rm /usr/bin/luajit-${LUAJIT_VERSION} \
     && rm -rf /tmp/src \
