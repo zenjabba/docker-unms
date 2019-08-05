@@ -102,9 +102,9 @@ RUN set -x \
         --http-proxy-temp-path=/tmp/proxy \
     && make -j $(nproc) \
     && make install \
-	&& cd /tmp/src/${PHP_VERSION} && ./configure \
-	    --with-config-file-path="/etc/php" \
-        --with-config-file-scan-dir="/etc/php/conf.d" \
+    && cd /tmp/src/${PHP_VERSION} && ./configure \
+	    --with-config-file-path="/usr/local/etc/php" \
+        --with-config-file-scan-dir="/usr/local/etc/php/conf.d" \
         --enable-option-checking=fatal \
         --with-mhash \
         --enable-ftp \
@@ -116,7 +116,11 @@ RUN set -x \
         --with-libedit \
         --with-openssl \
         --with-zlib \
-	&& make -j $(nproc) \
+        --enable-fpm \
+        --with-fpm-user=www-data \
+        --with-fpm-group=www-data \
+        --disable-cgi \
+    && make -j $(nproc) \
     && make install \
     && rm /usr/bin/luajit-${LUAJIT_VERSION} \
     && rm -rf /tmp/src \
