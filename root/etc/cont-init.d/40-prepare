@@ -21,6 +21,10 @@ ln -s /config/cert /cert
 [ -e /config/unms/logs ] || mkdir -p /config/unms/logs
 chown -R nobody:nogroup /config/unms/logs
 
+# UCRM Logs
+[ -e /config/ucrm/logs ] || mkdir -p /config/ucrm/logs
+chown -R nobody:nogroup /config/ucrm/logs
+
 # Service Logs
 [ -e /config/logs ] || mkdir -p /config/logs
 chown -R nobody:nogroup /config/logs
