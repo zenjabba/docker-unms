@@ -1,6 +1,7 @@
 # Multi-stage build - See https://docs.docker.com/engine/userguide/eng-image/multistage-build
 FROM ubnt/unms:0.14.2 as unms
 FROM ubnt/unms-netflow:0.14.2 as unms-netflow
+FROM ubnt/unms-crm:3.0.0-beta.6 as unms-crm
 FROM oznu/s6-node:10.15.1-debian-amd64
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -15,7 +16,7 @@ RUN set -x \
     postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6 libpq-dev \
     gzip bash vim openssl libcap-dev dumb-init sudo gettext zlibc zlib1g zlib1g-dev \
     iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git pkg-config \
-	libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev \
+	libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev jq \
   && apt-get install -y certbot -t stretch-backports
 
 # start ubnt/unms dockerfile #
@@ -50,6 +51,12 @@ RUN cd /home/app/netflow \
   && JOBS=$(nproc) npm install --production
 
 # end unms-netflow dockerfile #
+
+# start unms-crm dockerfile #
+RUN mkdir -p /usr/src/ucrm
+
+COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
+# end unms-crm dockerfile #
 
 # ubnt/nginx docker file #
 ENV NGINX_UID=1000 \
