@@ -9,6 +9,11 @@ chown -R abc:abc /config/redis
 [ -d /home/app/unms/data ] && rm -rf /home/app/unms/data
 ln -s /config/unms /home/app/unms/data
 
+# UCRM
+[ -e /config/ucrm ] || mv /usr/src/ucrm/app/data /config/ucrm
+[ -d /usr/src/ucrm/app/data ] && rm -rf /usr/src/ucrm/app/data
+ln -s /config/ucrm /usr/src/ucrm/app/data
+
 # Nginx Firmware
 mkdir -p /home/app/unms/public/firmwares /www
 ln -s /home/app/unms/public/firmwares /www/firmwares
