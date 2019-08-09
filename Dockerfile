@@ -55,7 +55,26 @@ RUN cd /home/app/netflow \
 # start unms-crm dockerfile #
 RUN mkdir -p /usr/src/ucrm
 
+WORKDIR /usr/src/ucrm/app
+
 COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
+
+RUN mkdir -p -m 777 "$HOME/data/account_statement_templates" \
+    && mkdir -p -m 777 "$HOME/data/backup" \
+    && mkdir -p -m 777 "$HOME/data/download" \
+    && mkdir -p -m 777 "$HOME/data/email_spool" \
+    && mkdir -p -m 777 "$HOME/data/import" \
+    && mkdir -p -m 777 "$HOME/data/invoice_templates" \
+    && mkdir -p -m 777 "$HOME/data/invoices" \
+    && mkdir -p -m 777 "$HOME/data/payment_receipt_templates" \
+    && mkdir -p -m 777 "$HOME/data/payment_receipts" \
+    && mkdir -p -m 777 "$HOME/data/plugins" \
+    && mkdir -p -m 777 "$HOME/data/proforma_invoice_templates" \
+    && mkdir -p -m 777 "$HOME/data/quote_templates" \
+    && mkdir -p -m 777 "$HOME/data/quotes" \
+    && mkdir -p -m 777 "$HOME/data/scheduling" \
+    && mkdir -p -m 777 "$HOME/data/ticketing" \
+    && mkdir -p -m 777 "$HOME/data/webroot" 
 # end unms-crm dockerfile #
 
 # ubnt/nginx docker file #
