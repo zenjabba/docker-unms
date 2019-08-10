@@ -30,11 +30,11 @@ COPY --from=unms /home/app/unms /home/app/unms
 RUN rm -rf node_modules \
     && JOBS=$(nproc) npm install sharp@latest \
     && JOBS=$(nproc) npm install --production \
-    && JOBS=$(nproc) npm install npm \
-    && mkdir -p -m 777 "$HOME/unms/public/site-images" \
-    && mkdir -p -m 777 "$HOME/unms/data/config-backups" \
-    && mkdir -p -m 777 "$HOME/unms/data/unms-backups" \
-    && mkdir -p -m 777 "$HOME/unms/data/import"
+    && JOBS=$(nproc) npm install npm 
+    # && mkdir -p -m 777 "$HOME/unms/public/site-images" \
+    # && mkdir -p -m 777 "$HOME/unms/data/config-backups" \
+    # && mkdir -p -m 777 "$HOME/unms/data/unms-backups" \
+    # && mkdir -p -m 777 "$HOME/unms/data/import"
 
 COPY --from=unms /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
@@ -55,26 +55,26 @@ RUN cd /home/app/netflow \
 # start unms-crm dockerfile #
 RUN mkdir -p /usr/src/ucrm
 
-WORKDIR /usr/src/ucrm/app
+WORKDIR /usr/src/ucrm/app/data
 
 COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
 
-RUN mkdir -p -m 777 "$HOME/data/account_statement_templates" \
-    && mkdir -p -m 777 "$HOME/data/backup" \
-    && mkdir -p -m 777 "$HOME/data/download" \
-    && mkdir -p -m 777 "$HOME/data/email_spool" \
-    && mkdir -p -m 777 "$HOME/data/import" \
-    && mkdir -p -m 777 "$HOME/data/invoice_templates" \
-    && mkdir -p -m 777 "$HOME/data/invoices" \
-    && mkdir -p -m 777 "$HOME/data/payment_receipt_templates" \
-    && mkdir -p -m 777 "$HOME/data/payment_receipts" \
-    && mkdir -p -m 777 "$HOME/data/plugins" \
-    && mkdir -p -m 777 "$HOME/data/proforma_invoice_templates" \
-    && mkdir -p -m 777 "$HOME/data/quote_templates" \
-    && mkdir -p -m 777 "$HOME/data/quotes" \
-    && mkdir -p -m 777 "$HOME/data/scheduling" \
-    && mkdir -p -m 777 "$HOME/data/ticketing" \
-    && mkdir -p -m 777 "$HOME/data/webroot" 
+RUN mkdir -p -m 777 "account_statement_templates" \
+    && mkdir -p -m 777 "backup" \
+    && mkdir -p -m 777 "download" \
+    && mkdir -p -m 777 "email_spool" \
+    && mkdir -p -m 777 "import" \
+    && mkdir -p -m 777 "invoice_templates" \
+    && mkdir -p -m 777 "invoices" \
+    && mkdir -p -m 777 "payment_receipt_templates" \
+    && mkdir -p -m 777 "payment_receipts" \
+    && mkdir -p -m 777 "plugins" \
+    && mkdir -p -m 777 "proforma_invoice_templates" \
+    && mkdir -p -m 777 "quote_templates" \
+    && mkdir -p -m 777 "quotes" \
+    && mkdir -p -m 777 "scheduling" \
+    && mkdir -p -m 777 "ticketing" \
+    && mkdir -p -m 777 "webroot" 
 # end unms-crm dockerfile #
 
 # ubnt/nginx docker file #
