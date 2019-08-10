@@ -2,8 +2,8 @@
 
 export TERM=xterm 
 export POSTGRES_USER=ucrm 
-export POSTGRES_DB=ucrm 
-export POSTGRES_PASSWORD=
+export POSTGRES_DB=unms 
+export POSTGRES_PASSWORD=ucrm
 export POSTGRES_HOST=127.0.0.1
 export POSTGRES_HOST_BOUNCER=localhost 
 export POSTGRES_PORT=5432 
@@ -24,7 +24,8 @@ export RABBITMQ_PASSWORD=guest
 export NETFLOW_HOST=127.0.0.1 
 export NETFLOW_PORT=2055 
 export SECRET=changeThisSecretKey 
-export SYMFONY_ENV=prod FORCE_HTTPS=1 
+export SYMFONY_ENV=prod
+export FORCE_HTTPS=1 
 export TRUSTED_PROXIES=all 
 export UCRM_USERNAME=null 
 export UCRM_PASSWORD=null 
