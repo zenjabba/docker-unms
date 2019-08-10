@@ -58,6 +58,9 @@ RUN mkdir -p /usr/src/ucrm
 WORKDIR /usr/src/ucrm/app/data
 
 COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
+COPY --from=unms-crm /usr/local/bin/crm-log /usr/local/bin
+COPY --from=unms-crm /usr/local/bin/crm-extra-programs-enabled /usr/local/bin
+COPY --from=unms-crm /usr/local/bin/crm-cron-enabled /usr/local/bin
 
 RUN mkdir -p -m 777 "account_statement_templates" \
     && mkdir -p -m 777 "backup" \
@@ -74,7 +77,8 @@ RUN mkdir -p -m 777 "account_statement_templates" \
     && mkdir -p -m 777 "quotes" \
     && mkdir -p -m 777 "scheduling" \
     && mkdir -p -m 777 "ticketing" \
-    && mkdir -p -m 777 "webroot" 
+    && mkdir -p -m 777 "webroot" \
+	&& grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g'
 # end unms-crm dockerfile #
 
 # ubnt/nginx docker file #
