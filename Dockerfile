@@ -16,7 +16,7 @@ RUN set -x \
     postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6 libpq-dev \
     gzip bash vim openssl libcap-dev dumb-init sudo gettext zlibc zlib1g zlib1g-dev \
     iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git pkg-config \
-	libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev jq \
+	libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev jq autoconf \
   && apt-get install -y certbot -t stretch-backports
 
 # start ubnt/unms dockerfile #
@@ -54,14 +54,14 @@ RUN cd /home/app/netflow \
 
 # start unms-crm dockerfile #
 RUN mkdir -p /usr/src/ucrm \
-  && mkdir -p /tmp/crontabs
+  && mkdir -p /tmp/crontabs \
+  && mkdir -p /usr/local/etc/php/conf.d
 
 WORKDIR /usr/src/ucrm/app/data
 
 COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
-COPY --from=unms-crm /usr/local/bin/crm-log /usr/local/bin
-COPY --from=unms-crm /usr/local/bin/crm-extra-programs-enabled /usr/local/bin
-COPY --from=unms-crm /usr/local/bin/crm-cron-enabled /usr/local/bin
+COPY --from=unms-crm /usr/local/bin/crm* /usr/local/bin/
+COPY --from=unms-crm /usr/local/bin/docker* /usr/local/bin/
 COPY --from=unms-crm /tmp/crontabs/server /tmp/crontabs/server
 
 RUN mkdir -p -m 777 "account_statement_templates" \
@@ -80,8 +80,8 @@ RUN mkdir -p -m 777 "account_statement_templates" \
     && mkdir -p -m 777 "scheduling" \
     && mkdir -p -m 777 "ticketing" \
     && mkdir -p -m 777 "webroot" \
-	&& grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g' \
-	&& grep -lR "su-exec nginx" /usr/src/ucrm/ | xargs sed -i 's/su-exec nginx/sudo/g'
+    && grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g' \
+    && grep -lR "su-exec nginx" /usr/src/ucrm/ | xargs sed -i 's/su-exec nginx/sudo/g'
 # end unms-crm dockerfile #
 
 # ubnt/nginx docker file #
@@ -155,6 +155,9 @@ RUN set -x \
         --disable-cgi \
     && make -j $(nproc) \
     && make install \
+	&& mkdir -p /usr/local/etc/php/conf.d \
+	&& echo '' | pecl install apcu \
+	&& bash -c "echo extension=apcu.so > /usr/local/etc/php/conf.d/apcu.ini" \
     && rm /usr/bin/luajit-${LUAJIT_VERSION} \
     && rm -rf /tmp/src \
     && rm -rf /var/cache/apk/* \
