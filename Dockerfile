@@ -53,7 +53,8 @@ RUN cd /home/app/netflow \
 # end unms-netflow dockerfile #
 
 # start unms-crm dockerfile #
-RUN mkdir -p /usr/src/ucrm
+RUN mkdir -p /usr/src/ucrm \
+  && mkdir -p /tmp/crontabs
 
 WORKDIR /usr/src/ucrm/app/data
 
@@ -61,6 +62,7 @@ COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
 COPY --from=unms-crm /usr/local/bin/crm-log /usr/local/bin
 COPY --from=unms-crm /usr/local/bin/crm-extra-programs-enabled /usr/local/bin
 COPY --from=unms-crm /usr/local/bin/crm-cron-enabled /usr/local/bin
+COPY --from=unms-crm /tmp/crontabs/server /tmp/crontabs/server
 
 RUN mkdir -p -m 777 "account_statement_templates" \
     && mkdir -p -m 777 "backup" \
@@ -78,7 +80,8 @@ RUN mkdir -p -m 777 "account_statement_templates" \
     && mkdir -p -m 777 "scheduling" \
     && mkdir -p -m 777 "ticketing" \
     && mkdir -p -m 777 "webroot" \
-	&& grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g'
+	&& grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g' \
+	&& grep -lR "su-exec nginx" /usr/src/ucrm/ | xargs sed -i 's/su-exec nginx/sudo/g'
 # end unms-crm dockerfile #
 
 # ubnt/nginx docker file #
