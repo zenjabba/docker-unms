@@ -16,7 +16,9 @@ RUN set -x \
     postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6 libpq-dev \
     gzip bash vim openssl libcap-dev dumb-init sudo gettext zlibc zlib1g zlib1g-dev \
     iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git pkg-config \
-	libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev jq autoconf \
+	libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev \
+    jq autoconf libgmp-dev libpng-dev libbz2-dev libc-client-dev libkrb5-dev \
+    libjpeg-dev libfreetype6-dev \
   && apt-get install -y certbot -t stretch-backports
 
 # start ubnt/unms dockerfile #
@@ -57,30 +59,30 @@ RUN mkdir -p /usr/src/ucrm \
   && mkdir -p /tmp/crontabs \
   && mkdir -p /usr/local/etc/php/conf.d
 
-WORKDIR /usr/src/ucrm/app/data
+# WORKDIR /usr/src/ucrm/app/data
 
 COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
 COPY --from=unms-crm /usr/local/bin/crm* /usr/local/bin/
 COPY --from=unms-crm /usr/local/bin/docker* /usr/local/bin/
 COPY --from=unms-crm /tmp/crontabs/server /tmp/crontabs/server
 
-RUN mkdir -p -m 777 "account_statement_templates" \
-    && mkdir -p -m 777 "backup" \
-    && mkdir -p -m 777 "download" \
-    && mkdir -p -m 777 "email_spool" \
-    && mkdir -p -m 777 "import" \
-    && mkdir -p -m 777 "invoice_templates" \
-    && mkdir -p -m 777 "invoices" \
-    && mkdir -p -m 777 "payment_receipt_templates" \
-    && mkdir -p -m 777 "payment_receipts" \
-    && mkdir -p -m 777 "plugins" \
-    && mkdir -p -m 777 "proforma_invoice_templates" \
-    && mkdir -p -m 777 "quote_templates" \
-    && mkdir -p -m 777 "quotes" \
-    && mkdir -p -m 777 "scheduling" \
-    && mkdir -p -m 777 "ticketing" \
-    && mkdir -p -m 777 "webroot" \
-    && grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g' \
+# RUN mkdir -p -m 777 "account_statement_templates" \
+    # && mkdir -p -m 777 "backup" \
+    # && mkdir -p -m 777 "download" \
+    # && mkdir -p -m 777 "email_spool" \
+    # && mkdir -p -m 777 "import" \
+    # && mkdir -p -m 777 "invoice_templates" \
+    # && mkdir -p -m 777 "invoices" \
+    # && mkdir -p -m 777 "payment_receipt_templates" \
+    # && mkdir -p -m 777 "payment_receipts" \
+    # && mkdir -p -m 777 "plugins" \
+    # && mkdir -p -m 777 "proforma_invoice_templates" \
+    # && mkdir -p -m 777 "quote_templates" \
+    # && mkdir -p -m 777 "quotes" \
+    # && mkdir -p -m 777 "scheduling" \
+    # && mkdir -p -m 777 "ticketing" \
+    # && mkdir -p -m 777 "webroot" \
+RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g' \
     && grep -lR "su-exec nginx" /usr/src/ucrm/ | xargs sed -i 's/su-exec nginx/sudo/g'
 # end unms-crm dockerfile #
 
@@ -89,7 +91,8 @@ ENV NGINX_UID=1000 \
     NGINX_VERSION=nginx-1.14.2 \
     LUAJIT_VERSION=2.1.0-beta3 \
     LUA_NGINX_VERSION=0.10.13 \
-	PHP_VERSION=php-7.2.19
+	PHP_VERSION=php-7.2.19 \
+	PHP_INI_DIR=/usr/local/etc/php
 
 RUN set -x \
     && mkdir -p /tmp/src && cd /tmp/src \
@@ -103,6 +106,7 @@ RUN set -x \
     && tar -zxvf luajit.tar.gz \
     && tar -zxvf nginx.tar.gz \
 	&& tar -xvf php.tar.xz \
+	&& cp php.tar.xz /usr/src \
     && cd /tmp/src/LuaJIT-${LUAJIT_VERSION} && make amalg PREFIX='/usr' && make install PREFIX='/usr' \
     && export LUAJIT_LIB=/usr/lib/libluajit-5.1.so && export LUAJIT_INC=/usr/include/luajit-2.1 \
     && cd /tmp/src/${NGINX_VERSION} && ./configure \
@@ -156,8 +160,8 @@ RUN set -x \
     && make -j $(nproc) \
     && make install \
 	&& mkdir -p /usr/local/etc/php/conf.d \
-	&& echo '' | pecl install apcu \
-	&& bash -c "echo extension=apcu.so > /usr/local/etc/php/conf.d/apcu.ini" \
+	&& echo '' | pecl install apcu ds \
+	&& docker-php-ext-enable apcu ds \
     && rm /usr/bin/luajit-${LUAJIT_VERSION} \
     && rm -rf /tmp/src \
     && rm -rf /var/cache/apk/* \
