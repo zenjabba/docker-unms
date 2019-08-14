@@ -159,9 +159,6 @@ RUN set -x \
         --disable-cgi \
     && make -j $(nproc) \
     && make install \
-	&& mkdir -p /usr/local/etc/php/conf.d \
-	&& echo '' | pecl install apcu ds \
-	&& docker-php-ext-enable apcu ds \
     && rm /usr/bin/luajit-${LUAJIT_VERSION} \
     && rm -rf /tmp/src \
     && rm -rf /var/cache/apk/* \
@@ -183,6 +180,22 @@ RUN cd /tmp \
 RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
   && sed -i "s#adduser -D#adduser --disabled-password --gecos \"\"#g" /entrypoint.sh
 # end ubnt/nginx docker file #
+
+# php extensions
+RUN mkdir -p /usr/local/etc/php/conf.d \
+    && echo '' | pecl install apcu ds \
+    && docker-php-ext-enable apcu ds \
+    && docker-php-ext-configure gd \
+        --with-gd \
+        --with-freetype-dir=/usr/include/ \
+        --with-png-dir=/usr/include/ \
+        --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-configure curl \
+    && docker-php-ext-configure imap \
+        --with-imap-ssl \
+        --with-kerberos \
+    && docker-php-ext-install -j2 pdo_pgsql gmp zip bcmath gd bz2 curl \
+      exif intl dom xml opcache imap soap sockets sysvmsg sysvshm sysvsem
 
 ENV PATH=/home/app/unms/node_modules/.bin:$PATH:/usr/lib/postgresql/9.6/bin \
   PGDATA=/config/postgres \
