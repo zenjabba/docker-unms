@@ -92,7 +92,6 @@ ENV NGINX_UID=1000 \
     LUAJIT_VERSION=2.1.0-beta3 \
     LUA_NGINX_VERSION=0.10.13 \
 	PHP_VERSION=php-7.2.19 \
-	PHP_INI_DIR=/usr/local/etc/php
 
 RUN set -x \
     && mkdir -p /tmp/src && cd /tmp/src \
@@ -181,7 +180,10 @@ RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
   && sed -i "s#adduser -D#adduser --disabled-password --gecos \"\"#g" /entrypoint.sh
 # end ubnt/nginx docker file #
 
-# php extensions
+# php & composer
+ENV PHP_INI_DIR=/usr/local/etc/php \
+    SYMFONY_ENV=prod
+	
 RUN mkdir -p /usr/local/etc/php/conf.d \
     && echo '' | pecl install apcu ds \
     && docker-php-ext-enable apcu ds \
@@ -195,7 +197,15 @@ RUN mkdir -p /usr/local/etc/php/conf.d \
         --with-imap-ssl \
         --with-kerberos \
     && docker-php-ext-install -j2 pdo_pgsql gmp zip bcmath gd bz2 curl \
-      exif intl dom xml opcache imap soap sockets sysvmsg sysvshm sysvsem
+      exif intl dom xml opcache imap soap sockets sysvmsg sysvshm sysvsem \
+    && curl -sS https://getcomposer.org/installer | php -- \
+        --install-dir=/usr/bin --filename=composer \
+	&& cd /usr/src/ucrm \
+    && composer global require hirak/prestissimo \
+    && composer install \
+        --classmap-authoritative \
+        --no-dev --no-interaction \
+    && composer clear-cache
 
 ENV PATH=/home/app/unms/node_modules/.bin:$PATH:/usr/lib/postgresql/9.6/bin \
   PGDATA=/config/postgres \
