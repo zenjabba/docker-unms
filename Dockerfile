@@ -83,7 +83,7 @@ COPY --from=unms-crm /tmp/crontabs/server /tmp/crontabs/server
     # && mkdir -p -m 777 "ticketing" \
     # && mkdir -p -m 777 "webroot" \
 RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g' \
-    && grep -lR "su-exec nginx" /usr/src/ucrm/ | xargs sed -i 's/su-exec nginx/sudo/g'
+    && grep -lR "su-exec nginx" /usr/src/ucrm/ | xargs sed -i 's/su-exec nginx//g'
 # end unms-crm dockerfile #
 
 # ubnt/nginx docker file #
