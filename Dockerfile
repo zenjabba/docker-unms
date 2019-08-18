@@ -186,8 +186,9 @@ RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
 ENV PHP_INI_DIR=/usr/local/etc/php \
     SYMFONY_ENV=prod
 	
-RUN mkdir -p /usr/local/etc/php/conf.d \
-    && echo '' | pecl install apcu ds \
+COPY --from=unms-crm /usr/local/etc/php/php.ini /usr/local/etc/php/
+
+RUN echo '' | pecl install apcu ds \
     && docker-php-ext-enable apcu ds \
     && docker-php-ext-configure gd \
         --with-gd \
@@ -208,6 +209,7 @@ RUN mkdir -p /usr/local/etc/php/conf.d \
         --classmap-authoritative \
         --no-dev --no-interaction \
     && composer clear-cache
+# end php & composer
 
 ENV PATH=/home/app/unms/node_modules/.bin:$PATH:/usr/lib/postgresql/9.6/bin \
   PGDATA=/config/postgres \
