@@ -57,7 +57,8 @@ RUN cd /home/app/netflow \
 # start unms-crm dockerfile #
 RUN mkdir -p /usr/src/ucrm \
   && mkdir -p /tmp/crontabs \
-  && mkdir -p /usr/local/etc/php/conf.d
+  && mkdir -p /usr/local/etc/php/conf.d \
+  && mkdir -p /usr/local/etc/php-fpm.d
 
 # WORKDIR /usr/src/ucrm/app/data
 
@@ -190,6 +191,8 @@ ENV PHP_INI_DIR=/usr/local/etc/php \
     SYMFONY_ENV=prod
 	
 COPY --from=unms-crm /usr/local/etc/php/php.ini /usr/local/etc/php/
+COPY --from=unms-crm /usr/local/etc/php-fpm.conf /usr/local/etc/
+COPY --from=unms-crm /usr/local/etc/php-fpm.d /usr/local/etc/php-fpm.d
 
 RUN echo '' | pecl install apcu ds \
     && docker-php-ext-enable apcu ds \
