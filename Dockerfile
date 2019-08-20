@@ -85,6 +85,7 @@ COPY --from=unms-crm /tmp/crontabs/server /tmp/crontabs/server
     # && mkdir -p -m 777 "webroot" \
 RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g' \
     && grep -lR "su-exec nginx" /usr/src/ucrm/ | xargs sed -i 's/su-exec nginx//g' \
+    && grep -lR "su-exec nginx" /tmp/crontabs/ | xargs sed -i 's/su-exec nginx//g' \
     && sed -i 's#chmod -R 775 /data/log/var/log#chmod -R 777 /data/log/var/log#g' /usr/src/ucrm/scripts/dirs.sh \
 	&& sed -i 's#LC_CTYPE=C tr -dc "a-zA-Z0-9" < /dev/urandom | fold -w 48 | head -n 1 || true#head -c 48 /dev/urandom | base64#g' \
       /usr/src/ucrm/scripts/parameters.sh \
