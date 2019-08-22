@@ -18,7 +18,7 @@ RUN set -x \
     iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git pkg-config \
 	libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev \
     jq autoconf libgmp-dev libpng-dev libbz2-dev libc-client-dev libkrb5-dev \
-    libjpeg-dev libfreetype6-dev \
+    libjpeg-dev libfreetype6-dev supervisor \
   && apt-get install -y certbot -t stretch-backports
 
 # start ubnt/unms dockerfile #
@@ -58,7 +58,9 @@ RUN cd /home/app/netflow \
 RUN mkdir -p /usr/src/ucrm \
   && mkdir -p /tmp/crontabs \
   && mkdir -p /usr/local/etc/php/conf.d \
-  && mkdir -p /usr/local/etc/php-fpm.d
+  && mkdir -p /usr/local/etc/php-fpm.d \
+  && mkdir -p /tmp/supervisor.d \
+  && mkdir -p /tmp/supervisord
 
 # WORKDIR /usr/src/ucrm/app/data
 
@@ -66,6 +68,8 @@ COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
 COPY --from=unms-crm /usr/local/bin/crm* /usr/local/bin/
 COPY --from=unms-crm /usr/local/bin/docker* /usr/local/bin/
 COPY --from=unms-crm /tmp/crontabs/server /tmp/crontabs/server
+COPY --from=unms-crm /tmp/supervisor.d /tmp/supervisor.d
+COPY --from=unms-crm /tmp/supervisord /tmp/supervisord
 
 # RUN mkdir -p -m 777 "account_statement_templates" \
     # && mkdir -p -m 777 "backup" \
