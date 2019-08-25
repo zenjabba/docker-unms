@@ -56,17 +56,17 @@ if [ $? -ne 0 ]; then
   psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA $UNMS_PG_SCHEMA OWNER TO $UNMS_PG_USER"
   psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA $UCRM_PG_SCHEMA OWNER TO $UCRM_PG_USER"
   #UCRM views
-  psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_db_version_view AS SELECT character varying(500) '0.14.3' as value"
+  psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_db_version_view AS SELECT character varying(500) '0.14.4' as value"
   psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_db_version_view OWNER TO $UCRM_PG_USER"
   psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_permission_group_view AS select uuid '00000000-0000-0000-0000-000000000000' as id, character varying(250) '0' as name"
   psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_permission_group_view OWNER TO $UCRM_PG_USER"  
 fi
 
-psql -U postgres -d $POSTGRES_DB -qt -c "SELECT value FROM crm_db_version_view" | cut -d \| -f 1 | grep -qw 0.14.3
+psql -U postgres -d $POSTGRES_DB -qt -c "SELECT value FROM crm_db_version_view" | cut -d \| -f 1 | grep -qw 0.14.4
 if [ $? -ne 0 ]; then
   echo "Updating crm_db_version_view..."
   psql -U postgres -d $POSTGRES_DB -c "DROP VIEW IF EXISTS crm_db_version_view"
-  psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_db_version_view AS SELECT character varying(500) '0.14.3' as value"
+  psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_db_version_view AS SELECT character varying(500) '0.14.4' as value"
 fi
 
 if [ "$QUIET_MODE" = "1" ]; then
