@@ -1,6 +1,6 @@
 # Multi-stage build - See https://docs.docker.com/engine/userguide/eng-image/multistage-build
-FROM ubnt/unms:0.14.2 as unms
-FROM ubnt/unms-netflow:0.14.2 as unms-netflow
+FROM ubnt/unms:0.14.4 as unms
+FROM ubnt/unms-netflow:0.14.4 as unms-netflow
 FROM ubnt/unms-crm:3.0.0-beta.6 as unms-crm
 FROM oznu/s6-node:10.15.1-debian-amd64
 
@@ -175,7 +175,7 @@ RUN set -x \
     && echo "unms ALL=(ALL) NOPASSWD: /usr/sbin/nginx -s *" >> /etc/sudoers \
     && echo "unms ALL=(ALL) NOPASSWD:SETENV: /copy-user-certs.sh reload" >> /etc/sudoers
 
-ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.2.tar.gz /tmp/unms.tar.gz
+ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.4.tar.gz /tmp/unms.tar.gz
 
 RUN cd /tmp \
     && tar -xzf unms.tar.gz \
