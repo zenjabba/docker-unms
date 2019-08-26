@@ -90,11 +90,15 @@ COPY --from=unms-crm /tmp/supervisord /tmp/supervisord
 RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g' \
     && grep -lR "su-exec nginx" /usr/src/ucrm/ | xargs sed -i 's/su-exec nginx//g' \
     && grep -lR "su-exec nginx" /tmp/crontabs/ | xargs sed -i 's/su-exec nginx//g' \
+    && grep -lR "su-exec nginx" /tmp/supervisor.d/ | xargs sed -i 's/su-exec nginx//g' \
     && sed -i 's#chmod -R 775 /data/log/var/log#chmod -R 777 /data/log/var/log#g' /usr/src/ucrm/scripts/dirs.sh \
 	&& sed -i 's#LC_CTYPE=C tr -dc "a-zA-Z0-9" < /dev/urandom | fold -w 48 | head -n 1 || true#head -c 48 /dev/urandom | base64#g' \
       /usr/src/ucrm/scripts/parameters.sh \
     && sed -i 's#-regex \x27.*Version\[0-9]\\{14\\}#-regextype posix-extended -regex \x27.*Version\[0-9]\{14}#g' \
-      /usr/src/ucrm/scripts/database_migrations_ready.sh
+      /usr/src/ucrm/scripts/database_migrations_ready.sh \
+    && sed -i '/\[program:nginx]/,+10d' /tmp/supervisor.d/server.ini \
+	&& sed -i '/\[program:pgbouncer]/,+10d' /tmp/supervisor.d/server.ini \
+    && sed -i "s#php-fpm --nodaemonize#php-fpm -R --nodaemonize#g" /usr/src/ucrm/scripts/wrapper/php-fpm.sh
 # end unms-crm dockerfile #
 
 # ubnt/nginx docker file #
@@ -219,7 +223,8 @@ RUN echo '' | pecl install apcu ds \
     && composer install \
         --classmap-authoritative \
         --no-dev --no-interaction \
-    && composer clear-cache
+    && composer clear-cache \
+    && sed -i 's#nginx#root#g' /usr/local/etc/php-fpm.d/zz-docker.conf
 # end php & composer
 
 ENV PATH=/home/app/unms/node_modules/.bin:$PATH:/usr/lib/postgresql/9.6/bin \
