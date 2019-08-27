@@ -16,7 +16,7 @@ RUN set -x \
     postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6 libpq-dev \
     gzip bash vim openssl libcap-dev dumb-init sudo gettext zlibc zlib1g zlib1g-dev \
     iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git pkg-config \
-	libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev \
+    libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev \
     jq autoconf libgmp-dev libpng-dev libbz2-dev libc-client-dev libkrb5-dev \
     libjpeg-dev libfreetype6-dev supervisor \
   && apt-get install -y certbot -t stretch-backports
@@ -97,7 +97,8 @@ RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:roo
     && sed -i 's#-regex \x27.*Version\[0-9]\\{14\\}#-regextype posix-extended -regex \x27.*Version\[0-9]\{14}#g' \
       /usr/src/ucrm/scripts/database_migrations_ready.sh \
     && sed -i '/\[program:nginx]/,+10d' /tmp/supervisor.d/server.ini \
-	&& sed -i '/\[program:pgbouncer]/,+10d' /tmp/supervisor.d/server.ini \
+    && sed -i '/\[program:pgbouncer]/,+10d' /tmp/supervisor.d/server.ini \
+    && sed -i '/\[program:cron]/,+10d' /tmp/supervisor.d/server.ini \
     && sed -i "s#php-fpm --nodaemonize#php-fpm -R --nodaemonize#g" /usr/src/ucrm/scripts/wrapper/php-fpm.sh
 # end unms-crm dockerfile #
 
@@ -106,7 +107,7 @@ ENV NGINX_UID=1000 \
     NGINX_VERSION=nginx-1.14.2 \
     LUAJIT_VERSION=2.1.0-beta3 \
     LUA_NGINX_VERSION=0.10.13 \
-	PHP_VERSION=php-7.2.19
+    PHP_VERSION=php-7.2.19
 
 RUN set -x \
     && mkdir -p /tmp/src && cd /tmp/src \
@@ -154,7 +155,7 @@ RUN set -x \
     && make -j $(nproc) \
     && make install \
     && cd /tmp/src/${PHP_VERSION} && ./configure \
-	    --with-config-file-path="/usr/local/etc/php" \
+        --with-config-file-path="/usr/local/etc/php" \
         --with-config-file-scan-dir="/usr/local/etc/php/conf.d" \
         --enable-option-checking=fatal \
         --with-mhash \
