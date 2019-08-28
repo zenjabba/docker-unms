@@ -30,3 +30,6 @@ chown -R nobody:nogroup /config/logs
 
 # Fix hosts file
 echo "127.0.0.1 unms" >> /etc/hosts
+
+# Fix logrotate permission
+chmod 644 /etc/logrotate.d/unms
