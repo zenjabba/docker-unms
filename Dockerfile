@@ -70,7 +70,7 @@ COPY --from=unms-crm /usr/local/bin/docker* /usr/local/bin/
 COPY --from=unms-crm /tmp/crontabs/server /tmp/crontabs/server
 COPY --from=unms-crm /tmp/supervisor.d /tmp/supervisor.d
 COPY --from=unms-crm /tmp/supervisord /tmp/supervisord
-COPY --from=unms-crm /etc/nginx/available-servers/* /etc/nginx/conf.d/
+COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/conf.d
 
 # RUN mkdir -p -m 777 "account_statement_templates" \
     # && mkdir -p -m 777 "backup" \
