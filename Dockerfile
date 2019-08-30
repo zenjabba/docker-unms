@@ -70,7 +70,6 @@ COPY --from=unms-crm /usr/local/bin/docker* /usr/local/bin/
 COPY --from=unms-crm /tmp/crontabs/server /tmp/crontabs/server
 COPY --from=unms-crm /tmp/supervisor.d /tmp/supervisor.d
 COPY --from=unms-crm /tmp/supervisord /tmp/supervisord
-COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/conf.d
 
 # RUN mkdir -p -m 777 "account_statement_templates" \
     # && mkdir -p -m 777 "backup" \
@@ -100,9 +99,7 @@ RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:roo
     && sed -i '/\[program:nginx]/,+10d' /tmp/supervisor.d/server.ini \
     && sed -i '/\[program:pgbouncer]/,+10d' /tmp/supervisor.d/server.ini \
     && sed -i '/\[program:cron]/,+10d' /tmp/supervisor.d/server.ini \
-    && sed -i "s#php-fpm --nodaemonize#php-fpm -R --nodaemonize#g" /usr/src/ucrm/scripts/wrapper/php-fpm.sh \
-    && sed -i "s#80#9081#g" /etc/nginx/conf.d/ucrm.conf \
-    && sed -i "s#81#9082#g" /etc/nginx/conf.d/suspended_service.conf
+    && sed -i "s#php-fpm --nodaemonize#php-fpm -R --nodaemonize#g" /usr/src/ucrm/scripts/wrapper/php-fpm.sh
 # end unms-crm dockerfile #
 
 # ubnt/nginx docker file #
@@ -181,7 +178,10 @@ RUN set -x \
     && rm -rf /tmp/src \
     && rm -rf /var/cache/apk/* \
     && echo "unms ALL=(ALL) NOPASSWD: /usr/sbin/nginx -s *" >> /etc/sudoers \
-    && echo "unms ALL=(ALL) NOPASSWD:SETENV: /copy-user-certs.sh reload" >> /etc/sudoers
+    && echo "unms ALL=(ALL) NOPASSWD:SETENV: /copy-user-certs.sh reload" >> /etc/sudoers \
+    && mkdir -p /etc/nginx/conf.d
+	
+COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/conf.d
 
 ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.4.tar.gz /tmp/unms.tar.gz
 
@@ -192,7 +192,9 @@ RUN cd /tmp \
     && cp -R templates /templates \
     && mkdir -p /www/public \
     && cp -R public /www/ \
-    && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh
+    && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh \
+    && sed -i "s#80#9081#g" /etc/nginx/conf.d/ucrm.conf \
+    && sed -i "s#81#9082#g" /etc/nginx/conf.d/suspended_service.conf
 
 # make compatible with debian
 RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
