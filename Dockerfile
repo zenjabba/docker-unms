@@ -181,7 +181,7 @@ RUN set -x \
     && echo "unms ALL=(ALL) NOPASSWD:SETENV: /copy-user-certs.sh reload" >> /etc/sudoers \
     && mkdir -p /etc/nginx/ucrm
 	
-COPY --from=unms-crm /etc/nginx /etc/nginx/ucrm
+COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/ucrm
 
 ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.4.tar.gz /tmp/unms.tar.gz
 
