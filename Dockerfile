@@ -178,12 +178,9 @@ RUN set -x \
     && rm -rf /tmp/src \
     && rm -rf /var/cache/apk/* \
     && echo "unms ALL=(ALL) NOPASSWD: /usr/sbin/nginx -s *" >> /etc/sudoers \
-    && echo "unms ALL=(ALL) NOPASSWD:SETENV: /copy-user-certs.sh reload" >> /etc/sudoers \
-    && mkdir -p /etc/nginx/ucrm \
-    && mkdir -p /etc/nginx/conf.d
+    && echo "unms ALL=(ALL) NOPASSWD:SETENV: /copy-user-certs.sh reload" >> /etc/sudoers
 	
-COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/ucrm
-COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/conf.d
+COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/enabled-servers
 
 ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.4.tar.gz /tmp/unms.tar.gz
 
@@ -195,8 +192,9 @@ RUN cd /tmp \
     && mkdir -p /www/public \
     && cp -R public /www/ \
     && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh 
-    #&& sed -i "s#80#9081#g" /etc/nginx/conf.d/ucrm.conf \
-    #&& sed -i "s#81#9082#g" /etc/nginx/conf.d/suspended_service.conf
+    && sed -i "s#80#9081#g" /etc/nginx/enabled-servers/ucrm.conf \
+    && sed -i "s#81#9082#g" /etc/nginx/enabled-servers/suspended_service.conf \
+    && sed -i '/conf;/a \ \ include /etc/nginx/enabled-servers/*.conf;' /templates/nginx.conf.template
 
 # make compatible with debian
 RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
