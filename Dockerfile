@@ -179,9 +179,11 @@ RUN set -x \
     && rm -rf /var/cache/apk/* \
     && echo "unms ALL=(ALL) NOPASSWD: /usr/sbin/nginx -s *" >> /etc/sudoers \
     && echo "unms ALL=(ALL) NOPASSWD:SETENV: /copy-user-certs.sh reload" >> /etc/sudoers \
-    && mkdir -p /etc/nginx/ucrm
+    && mkdir -p /etc/nginx/ucrm \
+    && mkdir -p /etc/nginx/conf.d
 	
 COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/ucrm
+COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/conf.d
 
 ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.4.tar.gz /tmp/unms.tar.gz
 
