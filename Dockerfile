@@ -191,7 +191,7 @@ RUN cd /tmp \
     && cp -R templates /templates \
     && mkdir -p /www/public \
     && cp -R public /www/ \
-    && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh 
+    && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh \
     && sed -i "s#80#9081#g" /etc/nginx/enabled-servers/ucrm.conf \
     && sed -i "s#81#9082#g" /etc/nginx/enabled-servers/suspended_service.conf \
     && sed -i '/conf;/a \ \ include /etc/nginx/enabled-servers/*.conf;' /templates/nginx.conf.template
