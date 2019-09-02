@@ -10,9 +10,9 @@ chown -R abc:abc /config/redis
 ln -s /config/unms /home/app/unms/data
 
 # UCRM
-[ -e /config/ucrm ] || mkdir -p /config/ucrm
+[ -e /config/unms/ucrm ] || mkdir -p /config/unms/ucrm
 [ -e /data ] || mkdir -p /data
-ln -s /config/ucrm /data/ucrm
+ln -s /config/unms/ucrm /data
 
 # Nginx Firmware
 mkdir -p /home/app/unms/public/firmwares /www
@@ -25,10 +25,6 @@ ln -s /config/cert /cert
 # UNMS Logs
 [ -e /config/unms/logs ] || mkdir -p /config/unms/logs
 chown -R nobody:nogroup /config/unms/logs
-
-# UCRM Logs
-[ -e /config/ucrm/logs ] || mkdir -p /config/ucrm/logs
-chown -R nobody:nogroup /config/ucrm/logs
 
 # Service Logs
 [ -e /config/logs ] || mkdir -p /config/logs
