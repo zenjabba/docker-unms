@@ -106,7 +106,8 @@ RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:roo
     && sed -i "1s#^#POSTGRES_USER=ucrm\n#" /tmp/crontabs/server \
     && sed -i "1s#^#POSTGRES_PORT=5432\n#" /tmp/crontabs/server \
     && sed -i "1s#^#POSTGRES_HOST=127.0.0.1\n#" /tmp/crontabs/server \
-    && sed -i "1s#^#PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n#" /tmp/crontabs/server
+    && sed -i "1s#^#PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n#" /tmp/crontabs/server \
+    && sed -i "s#\.0#\.crt#g" /usr/src/ucrm/scripts/update-certificates.sh
 # end unms-crm dockerfile #
 
 # ubnt/nginx docker file #

@@ -56,7 +56,6 @@ until pg_isready; do
 done
 
 
-
 if [ "$QUIET_MODE" = "1" ]; then
   echo "Starting UCRM in quiet mode..."
   cd /usr/src/ucrm
