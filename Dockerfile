@@ -87,7 +87,7 @@ COPY --from=unms-crm /tmp/supervisord /tmp/supervisord
     # && mkdir -p -m 777 "scheduling" \
     # && mkdir -p -m 777 "ticketing" \
     # && mkdir -p -m 777 "webroot" \
-RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/root:root/g' \
+RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/unms:unms/g' \
     && grep -lR "su-exec nginx" /usr/src/ucrm/ | xargs sed -i 's/su-exec nginx//g' \
     && grep -lR "su-exec nginx" /tmp/crontabs/ | xargs sed -i 's/su-exec nginx//g' \
     && grep -lR "su-exec nginx" /tmp/supervisor.d/ | xargs sed -i 's/su-exec nginx//g' \
@@ -238,7 +238,7 @@ RUN echo '' | pecl install apcu ds \
         --classmap-authoritative \
         --no-dev --no-interaction \
     && composer clear-cache \
-    && sed -i 's#nginx#root#g' /usr/local/etc/php-fpm.d/zz-docker.conf
+    && sed -i 's#nginx#unms#g' /usr/local/etc/php-fpm.d/zz-docker.conf
 # end php & composer
 
 ENV PATH=/home/app/unms/node_modules/.bin:$PATH:/usr/lib/postgresql/9.6/bin \
