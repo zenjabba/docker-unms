@@ -21,7 +21,7 @@ ln -s /home/app/unms/public/firmwares /www/firmwares
 [ -e /config/cert ] || mkdir -p /config/cert
 ln -s /config/cert /cert
 
-# UNMS Logs
+# UNMS / UCRM Logs
 [ -e /config/unms/logs ] || mkdir -p /config/unms/logs
 chown -R nobody:nogroup /config/unms/logs
 
