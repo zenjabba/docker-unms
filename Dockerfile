@@ -99,7 +99,6 @@ RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/unms:unm
     && sed -i '/\[program:nginx]/,+10d' /tmp/supervisor.d/server.ini \
     && sed -i '/\[program:pgbouncer]/,+10d' /tmp/supervisor.d/server.ini \
     && sed -i '/\[program:cron]/,+10d' /tmp/supervisor.d/server.ini \
-    && sed -i "s#php-fpm --nodaemonize#php-fpm -R --nodaemonize#g" /usr/src/ucrm/scripts/wrapper/php-fpm.sh \
     && sed -i "1s#^#POSTGRES_SCHEMA=ucrm\n#" /tmp/crontabs/server \
     && sed -i "1s#^#POSTGRES_DB=unms\n#" /tmp/crontabs/server \
     && sed -i "1s#^#POSTGRES_PASSWORD=ucrm\n#" /tmp/crontabs/server \
