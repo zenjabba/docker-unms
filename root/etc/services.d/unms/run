@@ -69,7 +69,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Convert database to UTF8
-psql -U postgres -d $POSTGRES_DB -qt -c "SHOW SERVER_ENCODING" | cut -d \| -f 1 | grep -qw SQL_ASCII
+psql -U postgres -d $POSTGRES_DB -qt -c "SHOW SERVER_ENCODING" | cut -d \| -f 1 | grep -qw UTF8
 if [ $? -ne 0 ]; then
   echo "Converting db to UTF8..."
   pg_dump -U postgres --encoding utf8 $POSTGRES_DB -f /config/unms_utf8.sql
