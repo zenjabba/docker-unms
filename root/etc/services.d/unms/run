@@ -39,13 +39,14 @@ if [ $? -ne 0 ]; then
   echo "Creating database..."
   createdb -U postgres -O postgres $POSTGRES_DB
 fi
-  
-psql -U postgres -d unms -qt -c "SELECT schema_name FROM information_schema.schemata" | cut -d \| -f 1 | grep -qw $UNMS_PG_SCHEMA
+
+# Migrate database
+psql -U postgres -d $POSTGRES_DB -qt -c "SELECT schema_name FROM information_schema.schemata" | cut -d \| -f 1 | grep -qw $UNMS_PG_SCHEMA
 if [ $? -ne 0 ]; then
   echo "Migrating database..."
   # Create user unms
   psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
-  psql -U postgres -d unms -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UNMS_PG_USER"
+  psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UNMS_PG_USER"
   # Create user ucrm
   psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UCRM_PG_USER SUPERUSER PASSWORD '$UCRM_PG_PASSWORD'"
   psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UCRM_PG_USER"
@@ -61,10 +62,28 @@ if [ $? -ne 0 ]; then
   psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA $UNMS_PG_SCHEMA OWNER TO $UNMS_PG_USER"
   psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA $UCRM_PG_SCHEMA OWNER TO $UCRM_PG_USER"
   #UCRM views
-  psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_db_version_view AS SELECT character varying(500) '0.14.4' as value"
-  psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_db_version_view OWNER TO $UCRM_PG_USER"
-  psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_permission_group_view AS select uuid '00000000-0000-0000-0000-000000000000' as id, character varying(250) '0' as name"
-  psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_permission_group_view OWNER TO $UCRM_PG_USER"  
+  #psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_db_version_view AS SELECT character varying(500) '0.14.4' as value"
+  #psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_db_version_view OWNER TO $UCRM_PG_USER"
+  #psql -U postgres -d $POSTGRES_DB -c "CREATE VIEW crm_permission_group_view AS select uuid '00000000-0000-0000-0000-000000000000' as id, character varying(250) '0' as name"
+  #psql -U postgres -d $POSTGRES_DB -c "ALTER VIEW crm_permission_group_view OWNER TO $UCRM_PG_USER"  
+fi
+
+# Convert database to UTF8
+psql -U postgres -d $POSTGRES_DB -qt -c "SHOW SERVER_ENCODING" | cut -d \| -f 1 | grep -qw SQL_ASCII
+if [ $? -ne 0 ]; then
+  echo "Converting db to UTF8..."
+  pg_dump -U postgres --encoding utf8 $POSTGRES_DB -f /config/unms_utf8.sql
+  s6-svc -wd -d /var/run/s6/services/postgres/
+  killall -u postgres -w
+  rm -rf /config/postgres/*
+  s6-setuidgid postgres initdb --locale=C.UTF-8
+  s6-svc -wu -u /var/run/s6/services/postgres/
+  createdb -U postgres -O postgres $POSTGRES_DB
+  psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UNMS_PG_USER SUPERUSER PASSWORD '$UNMS_PG_PASSWORD'"
+  psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UNMS_PG_USER"
+  psql -U postgres -d $POSTGRES_DB -c "CREATE USER $UCRM_PG_USER SUPERUSER PASSWORD '$UCRM_PG_PASSWORD'"
+  psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $UCRM_PG_USER"
+  psql -U postgres -f /config/unms_utf8.sql -d unms
 fi
 
 if [ "$QUIET_MODE" = "1" ]; then
