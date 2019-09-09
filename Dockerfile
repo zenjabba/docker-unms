@@ -1,10 +1,11 @@
 # Multi-stage build - See https://docs.docker.com/engine/userguide/eng-image/multistage-build
-FROM ubnt/unms:0.14.4 as unms
-FROM ubnt/unms-netflow:0.14.4 as unms-netflow
-FROM ubnt/unms-crm:3.0.0-beta.6 as unms-crm
+FROM ubnt/unms:1.0.2 as unms
+FROM ubnt/unms-nginx:1.0.2 as unms-nginx
+FROM ubnt/unms-netflow:1.0.2 as unms-netflow
+FROM ubnt/unms-crm:3.0.2 as unms-crm
 FROM oznu/s6-node:10.15.1-debian-amd64
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive 
 
 # base deps redis, rabbitmq, postgres 9.6
 RUN set -x \
@@ -190,16 +191,11 @@ RUN set -x \
 	
 COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/ucrm
 
-ADD https://github.com/Ubiquiti-App/UNMS/archive/v0.14.4.tar.gz /tmp/unms.tar.gz
+COPY --from=unms-nginx /entrypoint.sh refresh-certificate.sh openssl.cnf ip-whitelist.sh /
+COPY --from=unms-nginx /templates /templates
+COPY --from=unms-nginx /www/public /www/public
 
-RUN cd /tmp \
-    && tar -xzf unms.tar.gz \
-    && cd UNMS-*/src/nginx \
-    && cp entrypoint.sh refresh-certificate.sh refresh-configuration.sh openssl.cnf ip-whitelist.sh / \
-    && cp -R templates /templates \
-    && mkdir -p /www/public \
-    && cp -R public /www/ \
-    && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh \
+RUN && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh \
     && sed -i "s#80#9081#g" /etc/nginx/ucrm/ucrm.conf \
     && sed -i "s#81#9082#g" /etc/nginx/ucrm/suspended_service.conf \
     && sed -i '/conf;/a \ \ include /etc/nginx/ucrm/*.conf;' /templates/nginx.conf.template
