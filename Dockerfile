@@ -191,7 +191,7 @@ RUN set -x \
 	
 COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/ucrm
 
-COPY --from=unms-nginx /entrypoint.sh /refresh-certificate.sh /refresh-configuration /openssl.cnf /ip-whitelist.sh /
+COPY --from=unms-nginx /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /openssl.cnf /ip-whitelist.sh /
 COPY --from=unms-nginx /templates /templates
 COPY --from=unms-nginx /www/public /www/public
 
