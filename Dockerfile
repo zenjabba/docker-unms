@@ -191,11 +191,11 @@ RUN set -x \
 	
 COPY --from=unms-crm /etc/nginx/available-servers /etc/nginx/ucrm
 
-COPY --from=unms-nginx /entrypoint.sh refresh-certificate.sh openssl.cnf ip-whitelist.sh /
+COPY --from=unms-nginx /entrypoint.sh /refresh-certificate.sh /refresh-configuration /openssl.cnf /ip-whitelist.sh /
 COPY --from=unms-nginx /templates /templates
 COPY --from=unms-nginx /www/public /www/public
 
-RUN && chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh \
+RUN chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh \
     && sed -i "s#80#9081#g" /etc/nginx/ucrm/ucrm.conf \
     && sed -i "s#81#9082#g" /etc/nginx/ucrm/suspended_service.conf \
     && sed -i '/conf;/a \ \ include /etc/nginx/ucrm/*.conf;' /templates/nginx.conf.template
