@@ -199,7 +199,9 @@ COPY --from=unms-nginx /www/public /www/public
 RUN chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /ip-whitelist.sh \
     && sed -i "s#80#9081#g" /etc/nginx/ucrm/ucrm.conf \
     && sed -i "s#81#9082#g" /etc/nginx/ucrm/suspended_service.conf \
-    && sed -i '/conf;/a \ \ include /etc/nginx/ucrm/*.conf;' /templates/nginx.conf.template
+    && sed -i '/conf;/a \ \ include /etc/nginx/ucrm/*.conf;' /templates/nginx.conf.template \
+    && grep -lR "location /nms/ " /templates | xargs sed -i "s#location /nms/ #location /nms #g" \
+    && grep -lR "location /crm/ " /templates | xargs sed -i "s#location /crm/ #location /crm #g"
 
 # make compatible with debian
 RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
