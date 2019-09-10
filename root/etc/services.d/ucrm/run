@@ -46,7 +46,6 @@ export CLOUD_SMTP_HOSTNAME=null
 export CLOUD_SMTP_TLS_ALLOW_UNAUTHORIZED=null
 export CLOUD_SMTP_SECURITY_MODE=null
 export CLOUD_MAPS_API_KEY=null
-export PUBLIC_HTTPS_PORT=443
 export NODE_ENV=production
 
 # wait for postgres to come up
