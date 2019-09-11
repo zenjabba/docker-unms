@@ -3,7 +3,7 @@ FROM ubnt/unms:1.0.2 as unms
 FROM ubnt/unms-nginx:1.0.2 as unms-nginx
 FROM ubnt/unms-netflow:1.0.2 as unms-netflow
 FROM ubnt/unms-crm:3.0.2 as unms-crm
-FROM oznu/s6-node:10.15.1-debian-amd64
+FROM oznu/s6-node:10.15.3-debian-amd64
 
 ENV DEBIAN_FRONTEND=noninteractive 
 
@@ -33,11 +33,7 @@ COPY --from=unms /home/app/unms /home/app/unms
 RUN rm -rf node_modules \
     && JOBS=$(nproc) npm install sharp@latest \
     && JOBS=$(nproc) npm install --production \
-    && JOBS=$(nproc) npm install npm 
-    # && mkdir -p -m 777 "$HOME/unms/public/site-images" \
-    # && mkdir -p -m 777 "$HOME/unms/data/config-backups" \
-    # && mkdir -p -m 777 "$HOME/unms/data/unms-backups" \
-    # && mkdir -p -m 777 "$HOME/unms/data/import"
+    && JOBS=$(nproc) npm install npm
 
 COPY --from=unms /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
@@ -50,9 +46,8 @@ RUN mkdir -p /home/app/netflow
 COPY --from=unms-netflow /home/app /home/app/netflow
 
 RUN cd /home/app/netflow \
-  && rm -rf node_modules \
-  && JOBS=$(nproc) npm install --production
-
+    && rm -rf node_modules \
+    && JOBS=$(nproc) npm install --production
 # end unms-netflow dockerfile #
 
 # start unms-crm dockerfile #
@@ -63,8 +58,6 @@ RUN mkdir -p /usr/src/ucrm \
   && mkdir -p /tmp/supervisor.d \
   && mkdir -p /tmp/supervisord
 
-# WORKDIR /usr/src/ucrm/app/data
-
 COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
 COPY --from=unms-crm /usr/local/bin/crm* /usr/local/bin/
 COPY --from=unms-crm /usr/local/bin/docker* /usr/local/bin/
@@ -72,31 +65,15 @@ COPY --from=unms-crm /tmp/crontabs/server /tmp/crontabs/server
 COPY --from=unms-crm /tmp/supervisor.d /tmp/supervisor.d
 COPY --from=unms-crm /tmp/supervisord /tmp/supervisord
 
-# RUN mkdir -p -m 777 "account_statement_templates" \
-    # && mkdir -p -m 777 "backup" \
-    # && mkdir -p -m 777 "download" \
-    # && mkdir -p -m 777 "email_spool" \
-    # && mkdir -p -m 777 "import" \
-    # && mkdir -p -m 777 "invoice_templates" \
-    # && mkdir -p -m 777 "invoices" \
-    # && mkdir -p -m 777 "payment_receipt_templates" \
-    # && mkdir -p -m 777 "payment_receipts" \
-    # && mkdir -p -m 777 "plugins" \
-    # && mkdir -p -m 777 "proforma_invoice_templates" \
-    # && mkdir -p -m 777 "quote_templates" \
-    # && mkdir -p -m 777 "quotes" \
-    # && mkdir -p -m 777 "scheduling" \
-    # && mkdir -p -m 777 "ticketing" \
-    # && mkdir -p -m 777 "webroot" \
 RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/unms:unms/g' \
     && grep -lR "su-exec nginx" /usr/src/ucrm/ | xargs sed -i 's/su-exec nginx//g' \
     && grep -lR "su-exec nginx" /tmp/crontabs/ | xargs sed -i 's/su-exec nginx//g' \
     && grep -lR "su-exec nginx" /tmp/supervisor.d/ | xargs sed -i 's/su-exec nginx//g' \
     && sed -i 's#chmod -R 775 /data/log/var/log#chmod -R 777 /data/log/var/log#g' /usr/src/ucrm/scripts/dirs.sh \
-    && sed -i 's#LC_CTYPE=C tr -dc "a-zA-Z0-9" < /dev/urandom | fold -w 48 | head -n 1 || true#head -c 48 /dev/urandom | base64#g' \
-      /usr/src/ucrm/scripts/parameters.sh \
+    && sed -i 's#LC_CTYPE=C tr -dc "a-zA-Z0-9" < /dev/urandom | fold -w 48 | head -n 1 || true#head /dev/urandom | tr -dc A-Za-z0-9 | head -c 48#g' \
+       /usr/src/ucrm/scripts/parameters.sh \
     && sed -i 's#-regex \x27.*Version\[0-9]\\{14\\}#-regextype posix-extended -regex \x27.*Version\[0-9]\{14}#g' \
-      /usr/src/ucrm/scripts/database_migrations_ready.sh \
+       /usr/src/ucrm/scripts/database_migrations_ready.sh \
     && sed -i '/\[program:nginx]/,+10d' /tmp/supervisor.d/server.ini \
     && sed -i '/\[program:pgbouncer]/,+10d' /tmp/supervisor.d/server.ini \
     && sed -i '/\[program:cron]/,+10d' /tmp/supervisor.d/server.ini \
