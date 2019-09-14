@@ -87,7 +87,7 @@ RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/unms:unm
     && sed -i "s#\.0#\.crt#g" /usr/src/ucrm/scripts/update-certificates.sh \
     && sed -i "s#this->localUrlGenerator->generate('homepage')#ucrmPublicUrl#g" \
        /usr/src/ucrm/src/AppBundle/Service/Plugin/PluginUcrmConfigGenerator.php \
-    && sed -i "/update-ca-certificates/i cp /config/cert/live.crt /usr/local/share/ca-certificates/" /usr/src/ucrm/scripts/update-certificates.sh \
+    && sed -i "/update-ca-certificates/i cp /config/cert/live.crt /usr/local/share/ca-certificates/ || true" /usr/src/ucrm/scripts/update-certificates.sh \
     && /usr/src/ucrm/scripts/update-certificates.sh
 # end unms-crm dockerfile #
 
@@ -183,12 +183,12 @@ RUN chmod +x /entrypoint.sh /refresh-certificate.sh /refresh-configuration.sh /i
     && sed -i '/conf;/a \ \ include /etc/nginx/ucrm/*.conf;' /templates/nginx.conf.template \
     && grep -lR "location /nms/ " /templates | xargs sed -i "s#location /nms/ #location /nms #g" \
     && grep -lR "location /crm/ " /templates | xargs sed -i "s#location /crm/ #location /crm #g" \
-    && echo "cp /config/cert/live.crt /usr/local/share/ca-certificates/" >> /refresh-certificate.sh \
+    && echo "cp /config/cert/live.crt /usr/local/share/ca-certificates/ || true" >> /refresh-certificate.sh \
     && echo "update-ca-certificates" >> /refresh.certifcate.sh
 
 # make compatible with debian
 RUN sed -i "s#/bin/sh#/bin/bash#g" /entrypoint.sh \
-  && sed -i "s#adduser -D#adduser --disabled-password --gecos \"\"#g" /entrypoint.sh
+    && sed -i "s#adduser -D#adduser --disabled-password --gecos \"\"#g" /entrypoint.sh
 # end ubnt/nginx docker file #
 
 # php & composer
