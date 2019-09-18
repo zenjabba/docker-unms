@@ -19,7 +19,7 @@
         create 775 unms unms
 }
 
-/data/log/ucrm/nginx/*log /data/log/ucrm/php/*log /data/log/ucrm/letsencrypt/*lo                                                                                                                                                             g {
+/data/log/ucrm/nginx/*log /data/log/ucrm/php/*log /data/log/ucrm/letsencrypt/*log {
         rotate 14
         daily
         maxsize 10M
