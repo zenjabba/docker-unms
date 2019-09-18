@@ -61,6 +61,16 @@ if [ $? -ne 0 ]; then
   psql -U postgres -d $POSTGRES_DB -c "ALTER SCHEMA $UCRM_PG_SCHEMA OWNER TO $UCRM_PG_USER"
 fi
 
+# Migrate extensions
+psql -U postgres -d $POSTGRES_DB -qt -c "\df" | cut -d \| -f 2 | grep -qw "uuid_generate_v4"
+if [ $? -ne 0 ]; then
+  echo "Migrating extensions..."
+  extensions="$(psql -U postgres -d $POSTGRES_DB -qt -c "SELECT extname FROM pg_extension WHERE extname != 'plpgsql'")"
+  for extension in ${extensions}; do
+    psql -U postgres -d $POSTGRES_DB -c "ALTER EXTENSION \"${extension}\" SET SCHEMA public"
+  done
+fi
+
 # Convert database to UTF8
 psql -U postgres -d $POSTGRES_DB -qt -c "SHOW SERVER_ENCODING" | cut -d \| -f 1 | grep -qw UTF8
 if [ $? -ne 0 ]; then
