@@ -52,11 +52,11 @@ RUN cd /home/app/netflow \
 
 # start unms-crm dockerfile #
 RUN mkdir -p /usr/src/ucrm \
-  && mkdir -p /tmp/crontabs \
-  && mkdir -p /usr/local/etc/php/conf.d \
-  && mkdir -p /usr/local/etc/php-fpm.d \
-  && mkdir -p /tmp/supervisor.d \
-  && mkdir -p /tmp/supervisord
+    && mkdir -p /tmp/crontabs \
+    && mkdir -p /usr/local/etc/php/conf.d \
+    && mkdir -p /usr/local/etc/php-fpm.d \
+    && mkdir -p /tmp/supervisor.d \
+    && mkdir -p /tmp/supervisord
 
 COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
 COPY --from=unms-crm /usr/local/bin/crm* /usr/local/bin/
