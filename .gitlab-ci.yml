@@ -29,4 +29,4 @@ build-testing:
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA -f Dockerfile.armhf .
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:testing-armhf
     - docker push $CI_REGISTRY_IMAGE:testing-armhf
-    - docker rmi $CI_REGISTRY_IMAGE:testing-armhf
+    - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
