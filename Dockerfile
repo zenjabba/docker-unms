@@ -23,7 +23,7 @@ RUN set -x \
     iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git pkg-config \
     libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-dev \
     jq autoconf libgmp-dev libpng-dev libbz2-dev libc-client-dev libkrb5-dev \
-    libjpeg-dev libfreetype6-dev supervisor \
+    libjpeg-dev libfreetype6-dev libzip-dev supervisor \
   && apt-get install -y certbot -t stretch-backports
 
 # start ubnt/unms dockerfile #
