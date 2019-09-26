@@ -9,10 +9,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # base deps redis, rabbitmq, postgres 9.6
 RUN set -x \
+  && echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list \
+  && apt-get update \
   && apt-get -y install apt-transport-https lsb-release ca-certificates \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
-  && echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list \
   && apt-get update \
   && mkdir -p /usr/share/man/man1 /usr/share/man/man7 \
   && mkdir -p /usr/share/man/man7 \
