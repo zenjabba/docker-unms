@@ -10,6 +10,7 @@ build-master:
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:armhf
     - docker push $CI_REGISTRY_IMAGE:armhf
     - docker rmi $CI_REGISTRY_IMAGE:armhf
+    - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
 build-tag:
   only:
@@ -20,6 +21,7 @@ build-tag:
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG}-armhf
     - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG}-armhf
     - docker rmi $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG}-armhf
+    - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     
 build-testing:
   only:
@@ -29,4 +31,5 @@ build-testing:
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA -f Dockerfile.armhf .
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:testing-armhf
     - docker push $CI_REGISTRY_IMAGE:testing-armhf
+    - docker rmi $CI_REGISTRY_IMAGE:testing-armhf
     - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
