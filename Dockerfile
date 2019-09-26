@@ -9,6 +9,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # base deps redis, rabbitmq, postgres 9.6
 RUN set -x \
+  && apt-get -y install apt-transport-https lsb-release ca-certificates \
+  && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
+  && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
   && echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list \
   && apt-get update \
   && mkdir -p /usr/share/man/man1 /usr/share/man/man7 \
@@ -17,7 +20,7 @@ RUN set -x \
     postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6 libpq-dev \
     gzip bash vim openssl libcap-dev dumb-init sudo gettext zlibc zlib1g zlib1g-dev \
     iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git pkg-config \
-    libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev \
+    libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-dev \
     jq autoconf libgmp-dev libpng-dev libbz2-dev libc-client-dev libkrb5-dev \
     libjpeg-dev libfreetype6-dev supervisor \
   && apt-get install -y certbot -t stretch-backports
