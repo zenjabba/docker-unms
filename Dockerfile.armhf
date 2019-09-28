@@ -1,8 +1,8 @@
 # Multi-stage build - See https://docs.docker.com/engine/userguide/eng-image/multistage-build
-FROM ubnt/unms:1.0.3 as unms
-FROM ubnt/unms-nginx:1.0.3 as unms-nginx
-FROM ubnt/unms-netflow:1.0.3 as unms-netflow
-FROM ubnt/unms-crm:3.0.3 as unms-crm
+FROM ubnt/unms:1.0.5 as unms
+FROM ubnt/unms-nginx:1.0.5 as unms-nginx
+FROM ubnt/unms-netflow:1.0.5 as unms-netflow
+FROM ubnt/unms-crm:3.0.5 as unms-crm
 FROM oznu/s6-node:10.15.3-debian-armhf
 
 ENV DEBIAN_FRONTEND=noninteractive 
@@ -11,15 +11,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN set -x \
   && echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list \
   && apt-get update \
+  && apt-get -y install apt-transport-https lsb-release ca-certificates wget \
+  && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
+  && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
+  && apt-get update \
   && mkdir -p /usr/share/man/man1 /usr/share/man/man7 \
   && mkdir -p /usr/share/man/man7 \
   && apt-get install -y build-essential rabbitmq-server redis-server \
     postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6 libpq-dev \
     gzip bash vim openssl libcap-dev dumb-init sudo gettext zlibc zlib1g zlib1g-dev \
     iproute2 netcat wget libpcre3 libpcre3-dev libssl-dev git pkg-config \
-    libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-0-dev \
+    libcurl4-openssl-dev libxml2-dev libedit-dev libsodium-dev libargon2-dev \
     jq autoconf libgmp-dev libpng-dev libbz2-dev libc-client-dev libkrb5-dev \
-    libjpeg-dev libfreetype6-dev supervisor \
+    libjpeg-dev libfreetype6-dev libzip-dev unzip supervisor \
   && apt-get install -y certbot -t stretch-backports
 
 # start ubnt/unms dockerfile #
@@ -59,6 +63,7 @@ RUN mkdir -p /usr/src/ucrm \
     && mkdir -p /tmp/supervisord
 
 COPY --from=unms-crm /usr/src/ucrm /usr/src/ucrm
+COPY --from=unms-crm /data /data
 COPY --from=unms-crm /usr/local/bin/crm* /usr/local/bin/
 COPY --from=unms-crm /usr/local/bin/docker* /usr/local/bin/
 COPY --from=unms-crm /tmp/crontabs/server /tmp/crontabs/server
@@ -98,7 +103,7 @@ ENV NGINX_UID=1000 \
     NGINX_VERSION=nginx-1.14.2 \
     LUAJIT_VERSION=2.1.0-beta3 \
     LUA_NGINX_VERSION=0.10.13 \
-    PHP_VERSION=php-7.2.19
+    PHP_VERSION=php-7.3.10
 
 RUN set -x \
     && mkdir -p /tmp/src && cd /tmp/src \
