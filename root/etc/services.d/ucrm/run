@@ -48,6 +48,9 @@ export CLOUD_SMTP_SECURITY_MODE=null
 export CLOUD_MAPS_API_KEY=null
 export NODE_ENV=production
 
+# let UNMS start first to reduce load
+sleep 30
+
 # wait for postgres to come up
 until pg_isready; do
   echo "Waiting for postgres to come up..."
