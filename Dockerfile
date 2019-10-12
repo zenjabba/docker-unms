@@ -82,8 +82,8 @@ RUN grep -lR "nginx:nginx" /usr/src/ucrm/ | xargs sed -i 's/nginx:nginx/unms:unm
     && sed -i 's#-regex \x27.*Version\[0-9]\\{14\\}#-regextype posix-extended -regex \x27.*Version\[0-9]\{14}#g' \
        /usr/src/ucrm/scripts/database_migrations_ready.sh \
     && sed -i '/\[program:nginx]/,+10d' /tmp/supervisor.d/server.ini \
-    && sed -i '/\[program:pgbouncer]/,+10d' /tmp/supervisor.d/server.ini \
     && sed -i '/\[program:cron]/,+10d' /tmp/supervisor.d/server.ini \
+    && sed -i "s#php-fpm --nodaemonize --force-stderr#bash -c 'exec php-fpm --nodaemonize --force-stderr'#g" /tmp/supervisor.d/server.ini \
     && sed -i "1s#^#POSTGRES_SCHEMA=ucrm\n#" /tmp/crontabs/server \
     && sed -i "1s#^#POSTGRES_DB=unms\n#" /tmp/crontabs/server \
     && sed -i "1s#^#POSTGRES_PASSWORD=ucrm\n#" /tmp/crontabs/server \
